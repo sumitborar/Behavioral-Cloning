@@ -14,7 +14,7 @@ The goals / steps of this project are the following:
 * Summarize the results with a written report
 
 
-####1. Submission includes all required files and can be used to run the simulator in autonomous mode
+#### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
 My project includes the following files:
 * Behaviour Cloning - 2.ipynb containing the code to create and train the model
@@ -25,36 +25,36 @@ My project includes the following files:
 * output.mp4 - Video of autonomous run across track 1
 * output-challenge.mp4 - Video of autonomous run across challenge track
 
-####2. Submission includes functional code
+#### 2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing
 ```sh
 python drive.py model.h5
 ```
 
-####3. Submission code is usable and readable
+#### 3. Submission code is usable and readable
 
  Behaviour Cloning - 2.ipynb contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
 
-###Model Architecture and Training Strategy
+### Model Architecture and Training Strategy
 
-####1. An appropriate model architecture has been employed
+#### 1. An appropriate model architecture has been employed
 
 My model consists of a convolution neural network with 3x3 filter sizes and dense layers.  
 
 The model includes ELU activation function to introduce nonlinearity instead of 'relu' as it is faster. Each image is cropped to remove horizon and car areas and resized to 80X160. Image is then normalized with 0 mean.
 
 
-####2. Attempts to reduce overfitting in the model
+#### 2. Attempts to reduce overfitting in the model
 
 As shown model contains dropout layers in order to reduce overfitting  
 
 The model was trained and validated on different data sets to ensure that the model was not overfitting. (code line 58 ). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
-####3. Model parameter tuning
+#### 3. Model parameter tuning
 
 I used adam optimizer with learning rate of 1e-4 and decay of 0. Code is located on line 63.
 
-####4. Appropriate training data
+#### 4. Appropriate training data
 
 I combined training data from muliple sources.
 1. Udacity data
@@ -67,9 +67,9 @@ Angles for left and right lane images were calculated assuming that the cameras 
 
 For details about how I created the training data, see the next section.
 
-###Model Architecture and Training Strategy
+### Model Architecture and Training Strategy
 
-####1. Solution Design Approach
+#### 1. Solution Design Approach
 
 The overall strategy for deriving a model architecture was to make sure model will learn to recognize and generalize different car positions on lane and predict correct steering angle.
 
@@ -81,11 +81,13 @@ Initially I made an error while randomly flipping images. Due to this I found th
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
-####2. Final Model Architecture
+#### 2. Final Model Architecture
 
 The final model architecture (line 62) consisted of a convolution neural network with the following layers and layer sizes
 
-Details -
+Details:
+
+```
 ____________________________________________________________________________________________________
 Layer (type)                     Output Shape          Param #     Connected to
 ====================================================================================================
@@ -124,10 +126,12 @@ ________________________________________________________________________________
 dense_30 (Dense)                 (None, 1)             65          dropout_52[0][0]
 ====================================================================================================
 
-####3. Creation of the Training Set & Training Process
+```
+
+#### 3. Creation of the Training Set & Training Process
 
 
-Training dataset
+##### Training dataset
 
 I utilize three different training data sets to build my model.
 
@@ -138,39 +142,39 @@ I utilize three different training data sets to build my model.
 All three camera images are used as part of the training data.
 
 Example
-![Training data example ][./images/training_data_clr_images.png]
+![Training data example ][images/training_data_clr_images.png]
 
 For the challenge part of the assignment, I took one lap of the challenge track to train the fully connected layers of the existing model.
 
-Data Filtering
+##### Data Filtering
 
 Analysis of the training data showed lot of samples with 0 degree ( i.e. straight driving ). In order to balance training set I limit number of examples selected from each angle range. This helps in getting a balanced training data. Histogram below shows pre and post filtering distribution of training dataset.
 
-![Histogram of training data][./images/training_data_pre_post_distribution.png]
+![Histogram of training data][images/training_data_pre_post_distribution.png]
 
 Validation data is loaded separately and is an independent ideal run of the whole track.
 
-Data Augmentation
+##### Data Augmentation
 
 I utilize a data generator during the training process which augments the training data. For augmenting training data I utilize following process.
 
 1. Image is changed from RGB to YUV colorspace. Nvidia paper suggested that this gives better results.
 2. Random Shear - Each image is randomly shifted horizontally using Affine transformations to create artificial turning angles. This further helps in generating more turning samples.
 3. Random flip - Each image is randomly flipped by a probability of 50%. This helps in training for both left and right hand turns.
-4. Random Brighness - V channel of each image is modified with random distribution to help model generalize for different light conditions and shadows.
+4. Random Brightness - V channel of each image is modified with random distribution to help model generalize for different light conditions and shadows.
 5. Crop - Finally image is cropped and uninteresting sections from top and bottom of the frame are removed. Also image is resized to 80X160.
 
 Example of augmented training data
 
-![Augmented training samples ][./images/data_augumentation.png]
+![Augmented training samples ][images/data_augumentation.png]
 
 
 Batch generator runs multiple times for each epoch and generates a batch at runtime by calling batch_generator function which inturn randomly selects images from the orignal training set and passes them through augmentation pipe to generate a training batch.
 Below histogram shows distribution of steering angles in a batch.
 
-![Histogram of training batch][./images/batch_distribution.png]
+![Histogram of training batch][images/batch_distribution.png]
 
 
-Training Process
+##### Training Process
 
 Adams optimizer with mean squared loss is used for training. Early stopping with loss delta of 0.001 is used during training. Model is saved at each epoch. I observed that typically model generated by 9th epoch was able to drive the car around the track.
